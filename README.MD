@@ -1,0 +1,1 @@
+Autotest for registration form on demoqa.com, written on Selenide.
