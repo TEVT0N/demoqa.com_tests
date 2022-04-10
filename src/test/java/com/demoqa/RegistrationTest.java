@@ -1,15 +1,31 @@
 package com.demoqa;
 
-
+import com.demoqa.pages.RegistrationFormPage;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import com.codeborne.selenide.Configuration;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.*;
-
+import org.junit.jupiter.api.Test;
 
 public class RegistrationTest {
+
+    Faker faker = new Faker();
+    RegistrationFormPage registrationFormPage = new RegistrationFormPage();
+    String firstName = faker.name().firstName(),
+            lastName = faker.name().lastName(),
+            email = faker.internet().emailAddress(),
+            gender = "Male",
+            phoneNumber = faker.numerify("##########"),
+            day = "29",
+            month = "October",
+            year = "1990",
+            subject = "English",
+            hobby1 = "Sports",
+            hobby2 = "Reading",
+            hobby3 = "Music",
+            imgPath = "photo2.jpg",
+            address = faker.address().fullAddress(),
+            state = "NCR",
+            city = "Delhi";
 
     @BeforeAll
     static void setUp() {
@@ -19,52 +35,33 @@ public class RegistrationTest {
 
     @Test
     void successfulRegistration() {
-        String firstName = "Sergey";
-        String lastName = "Burmistrov";
-        String email = "test@test.com";
-        String gender = "Male";
-        String phoneNumber = "1234567890";
-        String subject = "English";
-        String hobby1 = "Sports";
-        String hobby2 = "Reading";
-        String hobby3 = "Music";
-        String imgPath = "photo2.jpg";
-        String address = "Address";
 
-        open("/automation-practice-form");
-        $("#firstName").setValue(firstName);
-        $("#lastName").setValue(lastName);
-        $("#userEmail").setValue(email);
-        $("#genterWrapper").$(byText("Male")).click();
-        $("#userNumber").setValue(phoneNumber);
-        $("#dateOfBirthInput").click();
-        $(".react-datepicker__month-select").selectOptionByValue("9");
-        $(".react-datepicker__year-select").selectOptionByValue("1990");
-        $(".react-datepicker__day--029").click();
-        $("#subjectsInput").setValue(subject).pressEnter();
-        $("#hobbiesWrapper").$(byText(hobby1)).click();
-        $("#hobbiesWrapper").$(byText(hobby2)).click();
-        $("#hobbiesWrapper").$(byText(hobby3)).click();
-        $("#uploadPicture").uploadFromClasspath(imgPath);
-        $("#currentAddress").setValue(address);
-        $("#state").click();
-        $("#react-select-3-option-0").click();
-        $("#city").click();
-        $("#react-select-4-option-0").click();
-        $("#submit").click();
-        $(".table-responsive").shouldHave(
-                text(firstName + " " + lastName),
-                text(email),
-                text(gender),
-                text(phoneNumber),
-                text("29 October,1990"),
-                text(subject),
-                text(hobby1),
-                text(hobby2),
-                text(hobby3),
-                text(imgPath),
-                text(address),
-                text("NCR Delhi"));
+        registrationFormPage.openPage()
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setGender(gender)
+                .setPhoneNumber(phoneNumber)
+                .setBirthDate(day, month, year)
+                .setSubject(subject)
+                .setHobbies(hobby1, hobby2, hobby3)
+                .setPicture(imgPath)
+                .setAddress(address)
+                .setState(state)
+                .setCity(city)
+                .submit()
+                .checkResult("Student Name", (firstName + " " + lastName))
+                .checkResult("Student Email", email)
+                .checkResult("Gender", gender)
+                .checkResult("Mobile", phoneNumber)
+                .checkResult("Date of Birth", (day + " " + month + "," + year))
+                .checkResult("Subjects", subject)
+                .checkResult("Hobbies", hobby1)
+                .checkResult("Hobbies", hobby2)
+                .checkResult("Hobbies", hobby3)
+                .checkResult("Picture", imgPath)
+                .checkResult("Address", address)
+                .checkResult("State and City", (state + " " + city));
     }
 }
 
