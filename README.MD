@@ -1,1 +1,1 @@
-Autotest for registration form on demoqa.com, written on Selenide.
+Autotest for registration form on demoqa.com, written with Selenide + Allure report, in addition added version with parametrized data for example.
