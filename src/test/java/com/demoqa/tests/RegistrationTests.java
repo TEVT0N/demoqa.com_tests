@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Owner("Burmis")
 @Feature("Registration")
-@DisplayName("Class for registrations tests")
+@DisplayName("Registration tests")
 public class RegistrationTests {
     RegistrationFormPage registrationFormPage = new RegistrationFormPage();
     Faker faker = new Faker();

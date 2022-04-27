@@ -1,1 +1,2 @@
 Autotest for registration form on demoqa.com, written with Selenide + Allure report, in addition added version with parametrized data for example.
+You can see Allure report at https://jenkins.autotests.cloud/job/C12-tevton-unit10/allure/
