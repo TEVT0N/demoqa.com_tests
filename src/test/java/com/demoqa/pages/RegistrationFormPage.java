@@ -1,10 +1,8 @@
 package com.demoqa.pages;
 
-import com.codeborne.selenide.WebDriverRunner;
-import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import java.util.HashMap;
+import java.util.Map;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
@@ -15,6 +13,8 @@ public class RegistrationFormPage {
     public RegistrationFormPage openPage() {
         open("/automation-practice-form");
         $(".practice-form-wrapper").shouldHave(text("Student Registration Form"));
+        executeJavaScript("$('footer').remove()");
+        executeJavaScript("$('#fixedban').remove()");
         return this;
     }
 
@@ -104,15 +104,11 @@ public class RegistrationFormPage {
     }
 
     @Step("Check result")
-    public RegistrationFormPage checkResult(String key, String value) {
-        $(".table-responsive").$(byText(key))
-                .parent().shouldHave(text(value));
-        attachScreenshot();
+    public RegistrationFormPage checkResult(HashMap<String, String> map) {
+        for (Map.Entry entry : map.entrySet()) {
+            $(".table-responsive").$(byText(entry.getKey().toString()))
+                    .parent().shouldHave(text(entry.getValue().toString()));
+        }
         return this;
-    }
-
-    @Attachment(value = "Screenshot", type = "image/png", fileExtension = "png")
-    public byte[] attachScreenshot() {
-        return ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
     }
 }

@@ -1,16 +1,21 @@
 package com.demoqa.tests;
 
 import com.codeborne.selenide.logevents.SelenideLogger;
+import com.demoqa.Attach;
 import com.demoqa.pages.RegistrationFormPage;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import java.util.HashMap;
+import java.util.Map;
 
 @Owner("Burmis")
 @Feature("Registration")
@@ -37,13 +42,42 @@ public class RegistrationTests {
 
     @BeforeAll
     static void setUp() {
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
+
         Configuration.baseUrl = "https://demoqa.com";
         Configuration.browserSize = "1920x1080";
+        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("enableVNC", true);
+        capabilities.setCapability("enableVideo", true);
+        Configuration.browserCapabilities = capabilities;
     }
-    @DisplayName("Successful registration")
+
+    @AfterEach
+    void addAttachments() {
+        Attach.screenshotAs("Last screenshot");
+        Attach.pageSource();
+        Attach.browserConsoleLogs();
+        Attach.addVideo();
+    }
+
     @Test
+    @DisplayName("Successful registration")
     void successfulRegistration() {
-        SelenideLogger.addListener("allure", new AllureSelenide());
+        Map<String, String> map = new HashMap<>();
+        map.put("Student Email", (firstName + " " + lastName));
+        map.put("Student Email", email);
+        map.put("Gender", gender);
+        map.put("Mobile", phoneNumber);
+        map.put("Date of Birth", (day + " " + month + "," + year));
+        map.put("Subjects", subject);
+        map.put("Hobbies", hobby1);
+        map.put("Hobbies", hobby2);
+        map.put("Hobbies", hobby3);
+        map.put("Picture", imgPath);
+        map.put("Address", address);
+        map.put("State and City", (state + " " + city));
         registrationFormPage.openPage()
                 .setFirstName(firstName)
                 .setLastName(lastName)
@@ -58,28 +92,17 @@ public class RegistrationTests {
                 .setState(state)
                 .setCity(city)
                 .submit()
-                .checkResult("Student Name", (firstName + " " + lastName))
-                .checkResult("Student Email", email)
-                .checkResult("Gender", gender)
-                .checkResult("Mobile", phoneNumber)
-                .checkResult("Date of Birth", (day + " " + month + "," + year))
-                .checkResult("Subjects", subject)
-                .checkResult("Hobbies", hobby1)
-                .checkResult("Hobbies", hobby2)
-                .checkResult("Hobbies", hobby3)
-                .checkResult("Picture", imgPath)
-                .checkResult("Address", address)
-                .checkResult("State and City", (state + " " + city));
+                .checkResult(new HashMap<>());
     }
 
     @ValueSource(strings = {
             "1900",
             "2000"
     })
-    @DisplayName("Successful registration")
-    @ParameterizedTest(name = "with {0} year")
-    void successfulParametrizedRegistration(String testData) {
 
+    @ParameterizedTest(name = "with {0} year")
+    @DisplayName("Successful registration")
+    void successfulParametrizedRegistration(String testData) {
         registrationFormPage.openPage()
                 .setFirstName(firstName)
                 .setLastName(lastName)
@@ -94,18 +117,7 @@ public class RegistrationTests {
                 .setState(state)
                 .setCity(city)
                 .submit()
-                .checkResult("Student Name", (firstName + " " + lastName))
-                .checkResult("Student Email", email)
-                .checkResult("Gender", gender)
-                .checkResult("Mobile", phoneNumber)
-                .checkResult("Date of Birth", (day + " " + month + "," + testData))
-                .checkResult("Subjects", subject)
-                .checkResult("Hobbies", hobby1)
-                .checkResult("Hobbies", hobby2)
-                .checkResult("Hobbies", hobby3)
-                .checkResult("Picture", imgPath)
-                .checkResult("Address", address)
-                .checkResult("State and City", (state + " " + city));
+                .checkResult(new HashMap<>());
     }
 }
 
