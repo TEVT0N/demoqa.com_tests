@@ -2,10 +2,12 @@ package com.demoqa.tests;
 
 import com.codeborne.selenide.logevents.SelenideLogger;
 import com.demoqa.Attach;
+import com.demoqa.config.CredentialsConfig;
 import com.demoqa.pages.RegistrationFormPage;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.AllureSelenide;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import com.codeborne.selenide.Configuration;
@@ -17,10 +19,15 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.codeborne.selenide.Selenide.closeWebDriver;
+
 @Owner("Burmis")
 @Feature("Registration")
 @DisplayName("Registration tests")
 public class RegistrationTests {
+    static CredentialsConfig config = ConfigFactory.create(CredentialsConfig.class);
+    static String login = config.login();
+    static String password = config.password();
     RegistrationFormPage registrationFormPage = new RegistrationFormPage();
     Faker faker = new Faker();
     String firstName = faker.name().firstName(),
@@ -40,13 +47,15 @@ public class RegistrationTests {
             state = "NCR",
             city = "Delhi";
 
+
     @BeforeAll
     static void setUp() {
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
 
-        Configuration.baseUrl = "https://demoqa.com";
-        Configuration.browserSize = "1920x1080";
-        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
+        Configuration.browser = System.getProperty("browser");
+        Configuration.baseUrl = System.getProperty("base_url");
+        Configuration.browserSize = System.getProperty("browser_size");
+        Configuration.remote = "https://" + login + ":" + password + "@" + System.getProperty("server_selenoid");
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("enableVNC", true);
@@ -60,13 +69,14 @@ public class RegistrationTests {
         Attach.pageSource();
         Attach.browserConsoleLogs();
         Attach.addVideo();
+        closeWebDriver();
     }
 
     @Test
     @DisplayName("Successful registration")
     void successfulRegistration() {
         Map<String, String> map = new HashMap<>();
-        map.put("Student Email", (firstName + " " + lastName));
+        map.put("Student Name", (firstName + " " + lastName));
         map.put("Student Email", email);
         map.put("Gender", gender);
         map.put("Mobile", phoneNumber);
