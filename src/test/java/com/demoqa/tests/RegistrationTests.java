@@ -1,33 +1,19 @@
 package com.demoqa.tests;
 
-import com.codeborne.selenide.logevents.SelenideLogger;
-import com.demoqa.Attach;
-import com.demoqa.config.CredentialsConfig;
 import com.demoqa.pages.RegistrationFormPage;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
-import io.qameta.allure.selenide.AllureSelenide;
-import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import com.codeborne.selenide.Configuration;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 @Owner("Burmis")
 @Feature("Registration")
 @DisplayName("Registration tests")
-public class RegistrationTests {
-    static CredentialsConfig config = ConfigFactory.create(CredentialsConfig.class);
-    static String login = config.login();
-    static String password = config.password();
+public class RegistrationTests extends TestBase {
+
     RegistrationFormPage registrationFormPage = new RegistrationFormPage();
     Faker faker = new Faker();
     String firstName = faker.name().firstName(),
@@ -46,31 +32,6 @@ public class RegistrationTests {
             address = faker.address().fullAddress(),
             state = "NCR",
             city = "Delhi";
-
-
-    @BeforeAll
-    static void setUp() {
-        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
-
-        Configuration.browser = System.getProperty("browser");
-        Configuration.baseUrl = System.getProperty("base_url");
-        Configuration.browserSize = System.getProperty("browser_size");
-        Configuration.remote = "https://" + login + ":" + password + "@" + System.getProperty("server_selenoid");
-
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("enableVNC", true);
-        capabilities.setCapability("enableVideo", true);
-        Configuration.browserCapabilities = capabilities;
-    }
-
-    @AfterEach
-    void addAttachments() {
-        Attach.screenshotAs("Last screenshot");
-        Attach.pageSource();
-        Attach.browserConsoleLogs();
-        Attach.addVideo();
-        closeWebDriver();
-    }
 
     @Test
     @DisplayName("Successful registration")
